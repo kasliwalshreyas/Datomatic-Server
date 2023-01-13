@@ -8,7 +8,7 @@
 
 ### Server
 
-* GIT clone the server repo from : ```https://github.com/MohitAswani/EMIDS-server``` 
+* GIT clone the server repo from : ```https://github.com/kasliwalshreyas/Datomatic-Server``` 
 
 * To install the dependencies run : ```npm i``` 
 
@@ -20,7 +20,7 @@
 
 ### Client
 
-* GIT clone the repo from : ```https://github.com/MohitAswani/EMIDS-client```
+* GIT clone the repo from : ```https://github.com/kasliwalshreyas/Datomatic-Client```
 
 * To install the dependencies run : ```npm i```
 
