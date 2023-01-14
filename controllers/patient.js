@@ -55,7 +55,7 @@ exports.sharePrescription = async (req, res, next) => {
   try {
     const pharmacyId = req.body.pharmacyId;
     const prescriptionId = req.body.prescriptionId;
-    const patientId = req.body.patientId;
+    const patientId = req.userId;
 
     const prescription = await Prescription.findById(prescriptionId).populate(
       "doctorId"
@@ -198,7 +198,6 @@ exports.getDoctors = async (req, res, next) => {
   }
 };
 
-
 exports.getPrescriptionsByDoctor = async (req, res, next) => {
   try {
     const doctorId = req.params.doctorId;
@@ -243,7 +242,6 @@ exports.getPrescriptionsByDoctor = async (req, res, next) => {
     }
     next(err);
   }
-
 };
 
 exports.getReportsByDoctor = async (req, res, next) => {
@@ -284,8 +282,7 @@ exports.getReportsByDoctor = async (req, res, next) => {
       message: "reports found",
       reports: resReports,
     });
-  }
-  catch (err) {
+  } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
@@ -297,8 +294,7 @@ exports.getDoctorInfo = async (req, res, next) => {
   try {
     const doctorId = req.params.doctorId;
 
-    const doctor = await User
-      .findById(doctorId);
+    const doctor = await User.findById(doctorId);
 
     if (!doctor) {
       const error = new Error("Doctor not found");
@@ -310,12 +306,45 @@ exports.getDoctorInfo = async (req, res, next) => {
       message: "Doctor found",
       doctor: doctor,
     });
-
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
   }
+};
 
+exports.getPatientInfo = async (req, res, next) => {
+  try {
+    const patientId = req.userId;
+    const patient = await User.findById(patientId);
+
+    res.status(200).json({
+      message: "Patient info found",
+      patientInfo: patient.patientInfo,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.postPatientInfo = async (req, res, next) => {
+  try {
+    const patientId = req.userId;
+    const patientInfo = req.body.patientInfo;
+
+    await User.updateOne({ _id: patientId }, { patientInfo: patientInfo });
+
+    res.status(200).json({
+      message: "Patient info updated",
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };

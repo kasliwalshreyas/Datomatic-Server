@@ -25,12 +25,32 @@ router.post(
 router.get("/prescriptions", isAuth, doctorController.getPrescriptions);
 
 // GET /doctor/last-month-prescriptions
-router.get("/last-month-prescriptions", isAuth, doctorController.getLastMonthPrescriptions);
+router.get(
+  "/last-month-prescriptions",
+  isAuth,
+  doctorController.getLastMonthPrescriptions
+);
 
 // GET /doctor/patient-count
 router.get("/patient-count", isAuth, doctorController.getPatientCount);
 
 // GET /doctor/patient-prescriptions/:phoneNumber
-router.get("/patient-prescriptions/:phoneNumber", isAuth, doctorController.getPatientPrescriptions);
+router.get(
+  "/patient-prescriptions/:phoneNumber",
+  isAuth,
+  doctorController.getPatientPrescriptions
+);
+
+// GET /doctor/info
+
+router.get("/info", isAuth, doctorController.getDoctorInfo);
+
+// POST /doctor/info
+
+router.post("/info", isAuth, doctorController.postDoctorInfo);
+
+// POST /doctor/upload-report
+
+router.post("/upload-report", isAuth, doctorController.uploadReport);
 
 module.exports = router;

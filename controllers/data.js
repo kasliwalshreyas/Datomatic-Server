@@ -22,7 +22,6 @@ exports.getName = async (req, res, next) => {
   }
 };
 
-
 exports.getPrescription = async (req, res, next) => {
   try {
     const prescription = await Prescription.findById(req.params.prescriptionId);
@@ -36,6 +35,23 @@ exports.getPrescription = async (req, res, next) => {
     res.status(200).json({
       message: "Prescription found",
       prescription: prescription,
+    });
+  } catch (err) {}
+};
+
+exports.getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      message: "User found",
+      user: user,
     });
   } catch (err) {}
 };
