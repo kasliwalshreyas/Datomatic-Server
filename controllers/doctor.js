@@ -48,31 +48,43 @@ exports.getPrescriptions = async (req, res, next) => {
       throw error;
     }
 
-    const prescriptions = await Prescription.find({
+    const patientPhoneNumbers = await Prescription.find({
       doctorId: user._id.toString(),
-    });
+    }).distinct("phoneNumber");
 
-    const resPrescription = prescriptions.map((prescription) => {
-      const prescriptionDate = new Date(prescription.createdAt);
+    const resPrescription = await Promise.all(patientPhoneNumbers.map(
+      async (patientPhoneNumber) => {
+        const recentPrescription = await Prescription.find({
+          phoneNumber: patientPhoneNumber,
+          doctorId: user._id.toString(),
+        })
+          .sort({ createdAt: -1 })
+          .limit(1);
 
-      return {
-        _id: prescription._id,
-        patientName: prescription.name,
-        date:
-          prescriptionDate.getDate() +
-          "/" +
-          (prescriptionDate.getMonth() + 1) +
-          "/" +
-          prescriptionDate.getFullYear(),
-        time:
-          prescriptionDate.getHours() +
-          ":" +
-          prescriptionDate.getMinutes() +
-          " " +
-          (prescriptionDate.getHours() > 12 ? "PM" : "AM"),
-        priority: "low",
-      };
-    });
+        const prescriptionDate = new Date(recentPrescription.createdAt);
+
+        console.log(recentPrescription);
+
+        return {
+          _id: recentPrescription._id,
+          patientName: recentPrescription.name,
+          patientPhoneNumber: recentPrescription.phoneNumber,
+          date:
+            prescriptionDate.getDate() +
+            "/" +
+            (prescriptionDate.getMonth() + 1) +
+            "/" +
+            prescriptionDate.getFullYear(),
+          time:
+            prescriptionDate.getHours() +
+            ":" +
+            prescriptionDate.getMinutes() +
+            " " +
+            (prescriptionDate.getHours() > 12 ? "PM" : "AM"),
+          priority: "low",
+        };
+      }
+    ));
 
     res.status(200).json({
       message: "Prescriptions found",
@@ -142,19 +154,9 @@ exports.getPatientCount = async (req, res, next) => {
 };
 
 exports.getPatientPrescriptions = async (req, res, next) => {
-  console.log(req.params.patientId);
   try {
-    const patient = await User.findById(req.params.patientId);
-
-    if (!patient) {
-      const error = new Error("Patient not found");
-      error.statusCode = 404;
-      throw error;
-    }
-
     const prescriptions = await Prescription.find({
-      phoneNumber: patient.phoneNumber,
-      doctorId: req.userId,
+      phoneNumber: req.params.phoneNumber,
     });
 
     const resPrescription = prescriptions.map((prescription) => {
