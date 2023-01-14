@@ -63,8 +63,6 @@ exports.getPrescriptions = async (req, res, next) => {
 
         const prescriptionDate = new Date(recentPrescription.createdAt);
 
-        console.log(recentPrescription);
-
         return {
           _id: recentPrescription._id,
           patientName: recentPrescription.name,
