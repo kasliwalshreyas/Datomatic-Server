@@ -125,13 +125,13 @@ exports.getPatientCount = async (req, res, next) => {
       throw error;
     }
 
-    const patientCount = await Prescription.count({
+    const distinctPatient = await Prescription.count({
       doctorId: user._id.toString(),
     }).distinct("phoneNumber");
 
     res.status(200).json({
       message: "Patient count found",
-      patientCount: patientCount,
+      patientCount: distinctPatient.length,
     });
   } catch (err) {
     if (!err.statusCode) {
