@@ -34,6 +34,7 @@ app.use((req, res, next) => {
 
 // PDF File filter
 const fileFilter = (req, file, cb) => {
+  console.log(file);
   if (file.mimetype === "application/pdf") {
     cb(null, true);
   } else {
