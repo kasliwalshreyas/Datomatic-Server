@@ -10,7 +10,11 @@ const router = express.Router();
 // GET /data/name
 router.get("/name", isAuth, dataController.getName);
 
-// GET /data/prescription
+// GET /data/user
+
+router.get("/user", isAuth, dataController.getUser);
+
+// GET /data/prescription/:prescriptionId
 router.get("/prescription/:prescriptionId", isAuth, dataController.getPrescription);
 
 module.exports = router;

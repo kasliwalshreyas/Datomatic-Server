@@ -26,11 +26,13 @@ const userSchema = new Schema({
     hospitalName: {
       type: String,
     },
+    extraInfo: {},
   },
   pharmacyInfo: {
     pharmacyName: {
       type: String,
     },
+    extraInfo: {},
   },
   patientInfo: {},
 });

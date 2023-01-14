@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const { getClosesMatch } = require("./utils/levdist");
+const multer = require("multer");
 
 const app = express();
 
@@ -16,6 +17,8 @@ const patientRoutes = require("./routes/patient");
 const pharmacyRoutes = require("./routes/pharmacy");
 const { ACTIONS } = require("./utils/Actions");
 
+const { fileStorage, getFileStream } = require("./utils/s3");
+
 app.use(express.json());
 
 // SETTING HEADERS
@@ -27,6 +30,28 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
 
   next();
+});
+
+// PDF File filter
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "application/pdf") {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+// FOR UPLOADING THE PDF
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("file")
+);
+
+// FOR DOWNLOADING THE PDF
+app.get("/file/:key", (req, res, next) => {
+  const key = req.params.key;
+  const readStream = getFileStream(key);
+
+  readStream.pipe(res);
 });
 
 // ADD ROUTES
@@ -70,7 +95,7 @@ mongoose
         socket.join(userId);
       });
 
-      socket.on("disconnecting",()=>{
+      socket.on("disconnecting", () => {
         socket.leave();
       });
     });

@@ -52,41 +52,41 @@ exports.getPrescriptions = async (req, res, next) => {
       doctorId: user._id.toString(),
     }).distinct("phoneNumber");
 
-    const resPrescription = await Promise.all(patientPhoneNumbers.map(
-      async (patientPhoneNumber) => {
-        const recentPrescription = await Prescription.find({
-          phoneNumber: patientPhoneNumber,
-          doctorId: user._id.toString(),
-        })
-          .sort({ createdAt: -1 })
-          .limit(1);
+    const recentPatients = patientPhoneNumbers.map(async (phoneNumber) => {
+      const recentPrescription = await Prescription.find({
+        phoneNumber: phoneNumber,
+        doctorId: user._id.toString(),
+      })
+        .sort({ createdAt: -1 })
+        .limit(1);
 
-        const prescriptionDate = new Date(recentPrescription.createdAt);
+      const prescriptionDate = new Date(recentPrescription[0].createdAt);
 
-        return {
-          _id: recentPrescription._id,
-          patientName: recentPrescription.name,
-          patientPhoneNumber: recentPrescription.phoneNumber,
-          date:
-            prescriptionDate.getDate() +
-            "/" +
-            (prescriptionDate.getMonth() + 1) +
-            "/" +
-            prescriptionDate.getFullYear(),
-          time:
-            prescriptionDate.getHours() +
-            ":" +
-            prescriptionDate.getMinutes() +
-            " " +
-            (prescriptionDate.getHours() > 12 ? "PM" : "AM"),
-          priority: "low",
-        };
-      }
-    ));
+      return {
+        _id: recentPrescription[0]._id,
+        patientName: recentPrescription[0].name,
+        patientPhoneNumber: recentPrescription[0].phoneNumber,
+        date:
+          prescriptionDate.getDate() +
+          "/" +
+          (prescriptionDate.getMonth() + 1) +
+          "/" +
+          prescriptionDate.getFullYear(),
+        time:
+          prescriptionDate.getHours() +
+          ":" +
+          prescriptionDate.getMinutes() +
+          " " +
+          (prescriptionDate.getHours() > 12 ? "PM" : "AM"),
+        priority: "low",
+      };
+    });
+
+    const resRecentPatients = await Promise.all(recentPatients);
 
     res.status(200).json({
       message: "Prescriptions found",
-      prescriptions: resPrescription,
+      prescriptions: resRecentPatients,
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -182,6 +182,64 @@ exports.getPatientPrescriptions = async (req, res, next) => {
       message: "Prescriptions found",
       prescriptions: resPrescription,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getDoctorInfo = async (req, res, next) => {
+  try {
+    const doctorId = req.userId;
+    const doctor = await User.findById(doctorId);
+
+    res.status(200).json({
+      message: "Doctor info found",
+      doctorInfo: doctor.doctorInfo,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.postDoctorInfo = async (req, res, next) => {
+  try {
+    const doctorId = req.userId;
+    const doctorInfo = req.body.doctorInfo;
+
+    const doctor = await User.findById(doctorId);
+
+    await User.updateOne(
+      { _id: doctorId },
+      {
+        doctorInfo: {
+          ...doctor.doctorInfo,
+          extraInfo: doctorInfo,
+        },
+      }
+    );
+
+    res.status(200).json({
+      message: "Doctor info updated",
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.uploadReport = async (req, res, next) => {
+  try {
+    const file = req.file;
+
+    console.log(file);
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
