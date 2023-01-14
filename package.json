@@ -5,7 +5,8 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "author": "Shreyas Kasliwal",
   "license": "ISC",
@@ -22,6 +23,9 @@
     "moment": "^2.29.4",
     "mongoose": "^6.7.2",
     "multer": "*",
-    "socket.io": "^4.5.3"
+    "socket.io": "^4.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }

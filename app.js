@@ -11,6 +11,10 @@ const app = express();
 const authRoutes = require("./routes/auth");
 const scanRoutes = require("./routes/scan");
 const dataRoutes = require("./routes/data");
+const doctorRoutes = require("./routes/doctor");
+const patientRoutes = require("./routes/patient");
+const pharmacyRoutes = require("./routes/pharmacy");
+const { ACTIONS } = require("./utils/Actions");
 
 app.use(express.json());
 
@@ -31,6 +35,9 @@ app.get("/", (req, res) => {
 });
 app.use("/auth", authRoutes);
 app.use("/data", dataRoutes);
+app.use("/doctor", doctorRoutes);
+app.use("/patient", patientRoutes);
+app.use("/pharmacy", pharmacyRoutes);
 app.use(scanRoutes);
 
 // ERROR HANDLING
@@ -51,6 +58,22 @@ mongoose
     console.log("Connected");
     console.log("Listening on port ", process.env.PORT);
     const server = app.listen(process.env.PORT);
+
+    const io = require("./socket").init(server, {
+      cors: {
+        origin: "*",
+      },
+    });
+
+    io.on("connection", (socket) => {
+      socket.on(ACTIONS.JOIN, ({ userId }) => {
+        socket.join(userId);
+      });
+
+      socket.on("disconnecting",()=>{
+        socket.leave();
+      });
+    });
   })
   .catch((err) => {
     console.log(err);
