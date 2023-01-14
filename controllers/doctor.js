@@ -52,43 +52,41 @@ exports.getPrescriptions = async (req, res, next) => {
       doctorId: user._id.toString(),
     }).distinct("phoneNumber");
 
-    const resPrescription = await Promise.all(patientPhoneNumbers.map(
-      async (patientPhoneNumber) => {
-        const recentPrescription = await Prescription.find({
-          phoneNumber: patientPhoneNumber,
-          doctorId: user._id.toString(),
-        })
-          .sort({ createdAt: -1 })
-          .limit(1);
+    const recentPatients = patientPhoneNumbers.map(async (phoneNumber) => {
+      const recentPrescription = await Prescription.find({
+        phoneNumber: phoneNumber,
+        doctorId: user._id.toString(),
+      })
+        .sort({ createdAt: -1 })
+        .limit(1);
 
-        const prescriptionDate = new Date(recentPrescription.createdAt);
+      const prescriptionDate = new Date(recentPrescription[0].createdAt);
 
-        console.log(recentPrescription);
+      return {
+        _id: recentPrescription[0]._id,
+        patientName: recentPrescription[0].name,
+        patientPhoneNumber: recentPrescription[0].phoneNumber,
+        date:
+          prescriptionDate.getDate() +
+          "/" +
+          (prescriptionDate.getMonth() + 1) +
+          "/" +
+          prescriptionDate.getFullYear(),
+        time:
+          prescriptionDate.getHours() +
+          ":" +
+          prescriptionDate.getMinutes() +
+          " " +
+          (prescriptionDate.getHours() > 12 ? "PM" : "AM"),
+        priority: "low",
+      };
+    });
 
-        return {
-          _id: recentPrescription._id,
-          patientName: recentPrescription.name,
-          patientPhoneNumber: recentPrescription.phoneNumber,
-          date:
-            prescriptionDate.getDate() +
-            "/" +
-            (prescriptionDate.getMonth() + 1) +
-            "/" +
-            prescriptionDate.getFullYear(),
-          time:
-            prescriptionDate.getHours() +
-            ":" +
-            prescriptionDate.getMinutes() +
-            " " +
-            (prescriptionDate.getHours() > 12 ? "PM" : "AM"),
-          priority: "low",
-        };
-      }
-    ));
+    const resRecentPatients = await Promise.all(recentPatients);
 
     res.status(200).json({
       message: "Prescriptions found",
-      prescriptions: resPrescription,
+      prescriptions: resRecentPatients,
     });
   } catch (err) {
     if (!err.statusCode) {
