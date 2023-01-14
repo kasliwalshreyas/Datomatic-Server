@@ -27,7 +27,7 @@ exports.getPrescriptions = async (req, res, next) => {
       return {
         _id: prescription._id,
         name: prescription.doctorId.name,
-        hospitalName: prescription.doctorId.hospitalName,
+        hospitalName: prescription.doctorId.doctorInfo.hospitalName,
         remarks: prescription.remarks,
         createdAt:
           prescriptionDate.getDate() +
@@ -97,7 +97,7 @@ exports.sharePrescription = async (req, res, next) => {
       _id: prescription._id,
       patientName: prescription.name,
       doctorName: prescription.doctorId.name,
-      hospitalName: prescription.doctorId.hospitalName,
+      hospitalName: prescription.doctorId.doctorInfo.hospitalName,
       remarks: prescription.remarks,
       createdAt:
         prescriptionDate.getDate() +
@@ -166,7 +166,7 @@ exports.getDoctors = async (req, res, next) => {
       return {
         _id: doctor._id,
         name: doctor.name,
-        hospitalName: doctor.hospitalName,
+        hospitalName: doctor.doctorInfo.hospitalName,
         recentVisit: recentVisit[0].createdAt,
         recentVisitDate:
           prescriptionDate.getDate() +

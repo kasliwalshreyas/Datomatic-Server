@@ -27,7 +27,7 @@ exports.getPrescriptions = async (req, res, next) => {
         _id: prescription.prescriptionId._id,
         patientName: prescription.prescriptionId.name,
         doctorName: prescription.doctorId.name,
-        hospitalName: prescription.doctorId.hospitalName,
+        hospitalName: prescription.doctorId.doctorInfo.hospitalName,
         remarks: prescription.prescriptionId.remarks,
         createdAt:
           prescriptionDate.getDate() +
@@ -67,7 +67,7 @@ exports.getPharmacyName = async (req, res, next) => {
 
     res.status(200).json({
       message: "Pharmacy name found",
-      pharmacyName: user.pharmacyName,
+      pharmacyName: user.pharmacyInfo.pharmacyName,
     });
   } catch (err) {
     if (!err.statusCode) {

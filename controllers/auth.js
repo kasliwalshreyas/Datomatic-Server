@@ -32,11 +32,11 @@ exports.signup = async (req, res, next) => {
     });
 
     if (userType === "doctor") {
-      user.hospitalName = hospitalName;
+      user.doctorInfo.hospitalName = hospitalName;
     }
 
     if (userType === "pharmacy") {
-      user.pharmacyName = pharmacyName;
+      user.pharmacyInfo.pharmacyName = pharmacyName;
     }
 
     const result = await user.save();
@@ -91,7 +91,13 @@ exports.login = async (req, res, next) => {
       { expiresIn: "5h" }
     );
 
-    res.status(200).json({ token: token, userId: user._id.toString(), userType: user.userType });
+    res
+      .status(200)
+      .json({
+        token: token,
+        userId: user._id.toString(),
+        userType: user.userType,
+      });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
