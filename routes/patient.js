@@ -16,4 +16,14 @@ router.post("/share-prescription", isAuth, patientController.sharePrescription);
 // GET /patient/get-doctors
 router.get("/get-doctors", isAuth, patientController.getDoctors);
 
+// GET /patient/get-prescriptions/:doctorId
+router.get("/get-prescriptions/:doctorId", isAuth, patientController.getPrescriptionsByDoctor);
+
+// GET /patient/get-reports/:doctorId
+router.get("/get-reports/:doctorId", isAuth, patientController.getReportsByDoctor);
+
+// GET /patient/get-doctor-info/:doctorId
+router.get("/get-doctor-info/:doctorId", isAuth, patientController.getDoctorInfo);
+
+
 module.exports = router;

@@ -30,4 +30,7 @@ router.get("/last-month-prescriptions", isAuth, doctorController.getLastMonthPre
 // GET /doctor/patient-count
 router.get("/patient-count", isAuth, doctorController.getPatientCount);
 
+// GET /doctor/patient-prescriptions/:patientId
+router.get("/patient-prescriptions/:patientId", isAuth, doctorController.getPatientPrescriptions);
+
 module.exports = router;

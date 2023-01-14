@@ -5,6 +5,7 @@ const { ACTIONS } = require("../utils/Actions");
 
 const User = require("../models/user");
 const Prescription = require("../models/prescription");
+const Report = require("../models/report");
 const SharedPrescription = require("../models/sharedPrescription");
 
 exports.getPrescriptions = async (req, res, next) => {
@@ -195,4 +196,126 @@ exports.getDoctors = async (req, res, next) => {
     }
     next(err);
   }
+};
+
+
+exports.getPrescriptionsByDoctor = async (req, res, next) => {
+  try {
+    const doctorId = req.params.doctorId;
+    const patientId = req.userId;
+    const phoneNumber = await User.findById(patientId);
+
+    if (!phoneNumber) {
+      const error = new Error("Patient not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const prescriptions = await Prescription.find({
+      doctorId: doctorId,
+      phoneNumber: phoneNumber.phoneNumber,
+    }).populate("doctorId");
+
+    const resPrescription = prescriptions.map((prescription) => {
+      const prescriptionDate = new Date(prescription.createdAt);
+
+      return {
+        _id: prescription._id,
+        name: prescription.doctorId.name,
+        hospitalName: prescription.doctorId.doctorInfo.hospitalName,
+        remarks: prescription.remarks,
+        createdAt:
+          prescriptionDate.getDate() +
+          "/" +
+          (prescriptionDate.getMonth() + 1) +
+          "/" +
+          prescriptionDate.getFullYear(),
+      };
+    });
+
+    res.status(200).json({
+      message: "Prescriptions found",
+      prescriptions: resPrescription,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
+};
+
+exports.getReportsByDoctor = async (req, res, next) => {
+  try {
+    const doctorId = req.params.doctorId;
+    const patientId = req.userId;
+    const phoneNumber = await User.findById(patientId);
+
+    if (!phoneNumber) {
+      const error = new Error("Patient not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const reports = await Report.find({
+      doctorId: doctorId,
+      phoneNumber: phoneNumber.phoneNumber,
+    }).populate("doctorId");
+
+    const resReports = reports.map((report) => {
+      const reportDate = new Date(report.createdAt);
+
+      return {
+        _id: report._id,
+        name: report.doctorId.name,
+        hospitalName: report.doctorId.doctorInfo.hospitalName,
+        remarks: report.remarks,
+        createdAt:
+          reportDate.getDate() +
+          "/" +
+          (reportDate.getMonth() + 1) +
+          "/" +
+          reportDate.getFullYear(),
+      };
+    });
+
+    res.status(200).json({
+      message: "reports found",
+      reports: resReports,
+    });
+  }
+  catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getDoctorInfo = async (req, res, next) => {
+  try {
+    const doctorId = req.params.doctorId;
+
+    const doctor = await User
+      .findById(doctorId);
+
+    if (!doctor) {
+      const error = new Error("Doctor not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      message: "Doctor found",
+      doctor: doctor,
+    });
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
 };

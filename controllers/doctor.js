@@ -61,7 +61,7 @@ exports.getPrescriptions = async (req, res, next) => {
         date:
           prescriptionDate.getDate() +
           "/" +
-          (prescriptionDate.getMonth()+1) +
+          (prescriptionDate.getMonth() + 1) +
           "/" +
           prescriptionDate.getFullYear(),
         time:
@@ -132,6 +132,55 @@ exports.getPatientCount = async (req, res, next) => {
     res.status(200).json({
       message: "Patient count found",
       patientCount: distinctPatient.length,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getPatientPrescriptions = async (req, res, next) => {
+  console.log(req.params.patientId);
+  try {
+    const patient = await User.findById(req.params.patientId);
+
+    if (!patient) {
+      const error = new Error("Patient not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const prescriptions = await Prescription.find({
+      phoneNumber: patient.phoneNumber,
+      doctorId: req.userId,
+    });
+
+    const resPrescription = prescriptions.map((prescription) => {
+      const prescriptionDate = new Date(prescription.createdAt);
+
+      return {
+        _id: prescription._id,
+        patientName: prescription.name,
+        date:
+          prescriptionDate.getDate() +
+          "/" +
+          (prescriptionDate.getMonth() + 1) +
+          "/" +
+          prescriptionDate.getFullYear(),
+        time:
+          prescriptionDate.getHours() +
+          ":" +
+          prescriptionDate.getMinutes() +
+          " " +
+          (prescriptionDate.getHours() > 12 ? "PM" : "AM"),
+      };
+    });
+
+    res.status(200).json({
+      message: "Prescriptions found",
+      prescriptions: resPrescription,
     });
   } catch (err) {
     if (!err.statusCode) {
