@@ -38,6 +38,10 @@ exports.fileStorage = multerS3({
 // Uploading a file normally
 
 exports.uploadFile = (file, fileName) => {
+  console.log(bucketName);
+  console.log(accessKey);
+  console.log(secretAccessKey);
+
   const uploadParams = {
     Bucket: bucketName,
     Body: file,

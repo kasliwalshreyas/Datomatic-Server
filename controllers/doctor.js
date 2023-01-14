@@ -247,3 +247,25 @@ exports.uploadReport = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getPatient = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ phoneNumber: req.params.phoneNumber });
+
+    if (!user) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      message: "Patient found",
+      patientInfo: user.patientInfo,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

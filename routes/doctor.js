@@ -49,6 +49,10 @@ router.get("/info", isAuth, doctorController.getDoctorInfo);
 
 router.post("/info", isAuth, doctorController.postDoctorInfo);
 
+// GET /doctor/patient/:phoneNumber
+
+router.get("/patient/:phoneNumber", isAuth, doctorController.getPatient);
+
 // POST /doctor/upload-report
 
 router.post("/upload-report", isAuth, doctorController.uploadReport);
