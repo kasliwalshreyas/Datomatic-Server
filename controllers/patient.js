@@ -32,7 +32,7 @@ exports.getPrescriptions = async (req, res, next) => {
         createdAt:
           prescriptionDate.getDate() +
           "/" +
-          (prescriptionDate.getMonth()+1) +
+          (prescriptionDate.getMonth() + 1) +
           "/" +
           prescriptionDate.getFullYear(),
       };
@@ -102,7 +102,7 @@ exports.sharePrescription = async (req, res, next) => {
       createdAt:
         prescriptionDate.getDate() +
         "/" +
-        (prescriptionDate.getMonth()+1) +
+        (prescriptionDate.getMonth() + 1) +
         "/" +
         prescriptionDate.getFullYear(),
     };
@@ -130,7 +130,7 @@ exports.getDoctors = async (req, res, next) => {
 
     let phoneNumber = await User.findById(patientId);
 
-    phoneNumber=phoneNumber.phoneNumber;
+    phoneNumber = phoneNumber.phoneNumber;
 
     const recentDoctors = await Prescription.find({
       phoneNumber: phoneNumber,
@@ -168,8 +168,14 @@ exports.getDoctors = async (req, res, next) => {
         name: doctor.name,
         hospitalName: doctor.hospitalName,
         recentVisit: recentVisit[0].createdAt,
-        recentVisitDate : prescriptionDate.getDate() + " " + monthNames[prescriptionDate.getMonth()] + " " + prescriptionDate.getFullYear(),
-        recentVisitTime : prescriptionDate.getHours() + ":" + prescriptionDate.getMinutes(),
+        recentVisitDate:
+          prescriptionDate.getDate() +
+          " " +
+          monthNames[prescriptionDate.getMonth()] +
+          " " +
+          prescriptionDate.getFullYear(),
+        recentVisitTime:
+          prescriptionDate.getHours() + ":" + prescriptionDate.getMinutes(),
       };
     });
 
@@ -179,9 +185,10 @@ exports.getDoctors = async (req, res, next) => {
       return new Date(b.recentVisit) - new Date(a.recentVisit);
     });
 
-
-    console.log(doctors);
-
+    res.status(200).json({
+      message: "Doctors found",
+      doctors: sortedDoctors,
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
