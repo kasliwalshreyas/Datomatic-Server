@@ -2,7 +2,7 @@
 
 * Live website available at : ```https://datomatic.netlify.app/```
 
-* Server available at : ```https://emids-backend.azurewebsites.net```
+* Server available at : ```https://datomatic-server-production-b281.up.railway.app/```
 
 ## To run on local system :
 
