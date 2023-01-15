@@ -11,22 +11,10 @@ const reportSchema = new Schema(
             type: String,
             required: true,
         },
-        age: {
+        fileURL: {
             type: String,
             required: true,
-        },
-        gender: {
-            type: String,
-            required: true,
-        },
-        remarks: {
-            type: String,
-        },
-        doctorId: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-        },
+        }
     },
     {
         timestamps: true,

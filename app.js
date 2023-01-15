@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { getClosesMatch } = require("./utils/levdist");
 const multer = require("multer");
+const bodyParser = require("body-parser");
 
 const app = express();
 
@@ -19,7 +20,8 @@ const { ACTIONS } = require("./utils/Actions");
 
 const { fileStorage, getFileStream } = require("./utils/s3");
 
-app.use(express.json());
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 // SETTING HEADERS
 app.use((req, res, next) => {
@@ -34,7 +36,6 @@ app.use((req, res, next) => {
 
 // PDF File filter
 const fileFilter = (req, file, cb) => {
-  console.log(file);
   if (file.mimetype === "application/pdf") {
     cb(null, true);
   } else {

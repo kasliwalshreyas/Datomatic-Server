@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 
 const User = require("../models/user");
 const Prescription = require("../models/prescription");
+const Report = require("../models/report");
 const SharedPrescription = require("../models/sharedPrescription");
 
 exports.savePrescription = async (req, res, next) => {
@@ -238,8 +239,38 @@ exports.postDoctorInfo = async (req, res, next) => {
 exports.uploadReport = async (req, res, next) => {
   try {
     const file = req.file;
+    const phoneNumber = req.body.phoneNumber;
 
-    console.log(file);
+    const report = new Report({
+      name: file.originalname,
+      fileURL: process.env.BACKEND_URL + "/file/" + file.key,
+      phoneNumber: phoneNumber,
+    });
+
+    await report.save();
+
+    return res.status(200).json({
+      message: "Report uploaded",
+      report: report,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getReports = async (req, res, next) => {
+  try {
+    const reports = await Report.find({
+      phoneNumber: req.params.phoneNumber,
+    });
+
+    res.status(200).json({
+      message: "Reports found",
+      reports: reports,
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

@@ -53,8 +53,12 @@ router.post("/info", isAuth, doctorController.postDoctorInfo);
 
 router.get("/patient/:phoneNumber", isAuth, doctorController.getPatient);
 
-// POST /doctor/upload-report
+// PUT /doctor/upload-report
 
-router.post("/upload-report", isAuth, doctorController.uploadReport);
+router.put("/upload-report", isAuth, doctorController.uploadReport);
+
+// GET /doctor/get-reports/:phoneNumber
+
+router.get("/get-reports/:phoneNumber", isAuth, doctorController.getReports);
 
 module.exports = router;
