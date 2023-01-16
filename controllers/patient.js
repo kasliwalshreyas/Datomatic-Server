@@ -319,6 +319,12 @@ exports.getPatientInfo = async (req, res, next) => {
     const patientId = req.userId;
     const patient = await User.findById(patientId);
 
+    if (!patient) {
+      const error = new Error("Patient not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
     res.status(200).json({
       message: "Patient info found",
       patientInfo: patient.patientInfo,
