@@ -354,3 +354,30 @@ exports.postPatientInfo = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getReports = async (req, res, next) => {
+  try {
+    const patientId = req.userId;
+    const patient = await User.findById(patientId);
+
+    if (!patient) {
+      const error = new Error("Patient not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const reports = await Report.find({
+      phoneNumber: patient.phoneNumber,
+    });
+
+    res.status(200).json({
+      message: "Reports found",
+      reports: reports,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

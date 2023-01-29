@@ -45,4 +45,8 @@ router.get("/info", isAuth, patientController.getPatientInfo);
 
 router.post("/info", isAuth, patientController.postPatientInfo);
 
+// GET /patient/get-reports/
+
+router.get("/get-reports", isAuth, patientController.getReports);
+
 module.exports = router;
